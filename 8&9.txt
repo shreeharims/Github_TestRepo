@@ -55,3 +55,21 @@ Sum = 8
  Result
 
 Successfully built, tagged, pushed Docker image and executed Java calculator program
+
+
+###### *999*
+1. Create the job in jenkins by the name Docker Integration with jenkins
+
+2. Configure the settings like the other jenkins programs
+
+3. Create Repository in github and place the Dockerfile and Java File
+
+4. Write the following Commands in Execute Windows batch command Option in jenkins
+
+docker build -t java-app .
+docker run -d -t java-app
+
+5. Save and apply 
+
+6. Once build is success check the image created in docker desktop
+
