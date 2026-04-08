@@ -6,7 +6,7 @@ class MyHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(b"Hello from Docker")
+        self.wfile.write(b"Hello from Docker Python Container")
 
 HTTPServer(("0.0.0.0", PORT), MyHandler).serve_forever()
 
