@@ -193,29 +193,54 @@ for _ in range(50):
 
 print("Generated Data:\n", G(torch.randn(3,3)).detach().numpy())
 
-3.!pip install transformers datasets torch
-from transformers import pipeline
+3.!pip install transformers datasets torch peft
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import LoraConfig, get_peft_model
+import torch
 
-model = pipeline("text-generation", model="gpt2")
+model_name = "gpt2"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
 
 prompt = "What is AI?"
+inputs = tokenizer(prompt, return_tensors="pt")
 
 print("Before Fine-Tuning:")
-print(model(prompt, max_length=40)[0]['generated_text'])
+output = model.generate(**inputs, max_length=40)
+print(tokenizer.decode(output[0]))
+
+lora_config = LoraConfig(
+    r=4,
+    lora_alpha=16,
+    target_modules=["c_attn"],
+    lora_dropout=0.1,
+    bias="none"
+)
+
+model = get_peft_model(model, lora_config)
 
 data = [
     "Q: What is AI? A: Artificial Intelligence is the ability of machines to learn.",
     "Q: What is ML? A: Machine Learning is a subset of AI."
 ]
 
-def fine_tuned_response(question):
-    for item in data:
-        if question.lower() in item.lower():
-            return item
-    return model(question, max_length=40)[0]['generated_text']
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+
+for epoch in range(5):
+    for text in data:
+        inputs = tokenizer(text, return_tensors="pt")
+        outputs = model(**inputs, labels=inputs["input_ids"])
+        loss = outputs.loss
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+inputs = tokenizer(prompt, return_tensors="pt")
 
 print("\nAfter Fine-Tuning:")
-print(fine_tuned_response(prompt))
+output = model.generate(**inputs, max_length=40)
+print(tokenizer.decode(output[0]))
 
 4.from transformers import pipeline
 
@@ -240,12 +265,11 @@ def generate(prompt):
     return generator(prompt, max_length=60, num_return_sequences=1)[0]['generated_text']
 
 print("Problem:\n", problem)
-
 print("\nZero-shot Output:\n", generate(zero_shot))
-
 print("\nFew-shot Output:\n", generate(few_shot))
-
 print("\nChain-of-Thought Output:\n", generate(chain_of_thought))
+print("\nComparison:")
+print("Few-shot and Chain-of-Thought generally give more accurate and structured answers than Zero-shot.")
 
 5.from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
