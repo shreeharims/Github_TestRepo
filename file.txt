@@ -67,3 +67,17 @@ for element in clients:
 12- a)
 from scapy.all import * result,unanswered=traceroute(["www.example.com","www.google.com"],maxttl=20) 
 result.show()
+
+shell script
+
+#!/bin/bash
+host="www.example.com"
+
+read -p "Enter starting port: " start_port
+read -p "Enter ending port: " end_port
+
+for (( port=start_port; port<=end_port; port++ ))
+do
+    echo "Scanning port $port..."
+    nc -zv -w1 "$host" "$port" 2>&1
+done
