@@ -1,0 +1,182 @@
+Q1.One of the BadStore pages has a hidden form field that establishes a new user’s privilege level. What is the name of this field?
+
+Procedure
+Open BadStore in browser.
+Identify that the search feature is vulnerable to SQL Injection.
+
+Enter the following payload in the search box:
+
+xx' IN (itemnum,sdesc,ldesc) UNION SELECT email,passwd,123,123 FROM userdb LIMIT 2 --
+If input length is restricted:
+Right-click → Inspect
+Remove maxlength attribute
+Re-enter payload
+Observe returned user credentials.
+
+Log in using admin credentials:
+
+Username: admin  
+Password: secret
+
+Navigate to:
+
+http://192.168.1.111/cgi-bin/badstore.cgi?action=admin
+Click “Add User”.
+Right-click → View Page Source.
+Search for hidden fields.
+Answer
+
+password
+
+Q2. How many items for purchase are in BadStore’s database?
+
+Procedure
+Open BadStore.
+
+In search box, type:
+
+x
+Observe query structure.
+
+Use SQL Injection:
+
+x' UNION SELECT count(itemnum),count(itemnum),count(itemnum),count(itemnum) FROM itemdb --
+Execute query.
+Observe result showing item count.
+Answer
+
+16
+
+Q3.What operations are suppliers permitted to do once logged in?
+
+Procedure
+
+Log in as admin:
+
+admin / secret
+
+Go to:
+
+action=admin
+Click “Show Current Users”.
+Identify supplier accounts (Role = S).
+Choose a supplier (e.g., joe@supplier.com
+).
+
+Log in at:
+
+action=supplierlogin
+
+After login, access:
+
+action=supplierportal
+Observe available options.
+Answer
+
+Upload Price Lists
+
+Q4. What credit card number did joe@supplier.com
+ use for a purchase of $46.95?
+
+Procedure
+
+Log in as:
+
+joe@supplier.com / iforgot
+Click “View Previous Orders”.
+
+Page opens:
+
+action=viewprevious
+Press Ctrl + F.
+
+Search:
+
+$46.95
+Identify corresponding credit card numbers.
+Answer
+
+4111 1111 1111 1111
+5500 0000 0000 0004
+
+Q5. Find users with emails in the format XXX@whole.biz
+. What is XXX?
+
+Procedure
+
+Log in as admin:
+
+admin / secret
+
+Navigate to:
+
+action=adminportal
+View user database.
+Press Ctrl + F.
+
+Search:
+
+whole.biz
+Identify matching users.
+Answer
+
+fred, landon
+
+Q6. What is the key of the session cookie?
+
+Procedure
+Open BadStore.
+
+In search box, enter:
+
+<script>alert(document.cookie)</script>
+Execute search.
+Observe popup showing cookies.
+Identify cookies in key=value format.
+Find the session cookie key.
+Answer
+
+SSOid
+
+Q7. What is the key of the cookie used for the cart?
+
+Procedure
+
+Open:
+
+action=whatsnew
+Add any item to cart.
+
+In search box, run:
+
+<script>alert(document.cookie)</script>
+Observe cookie values.
+Identify cart-related cookie.
+Answer
+
+CartID
+
+Q8. Which field in the cart cookie can be modified to change item price?
+
+Procedure
+Add item to cart.
+
+Extract cookie using:
+
+<script>alert(document.cookie)</script>
+Copy CartID value.
+Decode using URL decoder.
+
+Example:
+
+1527258326:1:11.5:1000
+Identify fields:
+Field 1 → Timestamp
+Field 2 → Unused
+Field 3 → Price
+Field 4 → Item ID
+Modify Field 3 (price).
+Refresh page and observe change.
+Answer
+
+Field 3 (Price Field)
