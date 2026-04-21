@@ -14,190 +14,6 @@ Nmap (Scanning Tool)
 • A tool used to discover hosts and open ports in a network.  
 • Helps in security auditing and vulnerability detection.  
 • Can perform port scan, OS detection, and service version detection.  
-
-
-PART 1: BADSTORE (WEB SECURITY) 
-1. Full Question 
-BadStore’s cart cookie is also an encoded string with a predictable structure 
-XXX:YYY:… etc., and it probably contains information it shouldn’t. Which field of 
-the decoded string could an attacker change to give himself a discount on an item’s 
-price? 
-Important Terms Explanation 
-• Cookie → Small data stored in browser to track user activity 
-• Cart Cookie → Stores shopping cart details (item, price, quantity) 
-• Encoded String → Data stored in format like 101:500:1 
-• Field → Each value (item ID, price, quantity) 
-• Attacker → User trying to manipulate data 
-What you will get as Output 
-• You decode cookie → see structure 
-• Modify price field 
-• Reload page → price changes 
-Demo (What you show) 
-Open browser → Inspect → Application → Cookies 
-Example: 
-cart=101:500:1 
-Change to: 
-cart=101:50:1 
-�
-� What you say to teacher 
-“Sir, here BadStore stores cart details in cookies. The format is itemID:price:quantity. 
-Since the price is stored on client side, I can modify it manually. After changing the price 
-from 500 to 50 and refreshing, the application accepts it and shows reduced price. This 
-is a security vulnerability because sensitive data should not be stored in cookies.” 
-2. Full Question 
-BadStore uses cookies to implement a session key, once you’ve authenticated. 
-What is the key of the session cookie? 
-Important Terms 
-• Session → Login state of user 
-• Session Cookie → Stores session ID after login 
-• Authentication → Login process 
-Output 
-• After login → cookie appears 
-• Example: 
-session_id=abc123 
-Demo 
-Login to BadStore 
-Open Cookies 
-You will see: 
-session_id=xyz789 
-�
-� What you say 
-“After logging in, the server generates a session cookie which maintains the user 
-session. Here the key is ‘session_id’. This is used by the server to identify the logged-in 
-user without asking for credentials again.” 
- 
- 
-3. Full Question 
-Log in as joe@supplier.com to BadStore—this is possible using SQL injection. Then 
-look at his previous orders and answer: What credit card number did he use to 
-make a purchase of $46.95? 
- 
-    Important Terms 
-• SQL Injection → Entering malicious input to bypass login 
-• Supplier Account → Special user with access to orders 
-• Order History → Previous purchases 
-• Credit Card Number → Stored payment info 
- 
-       Output 
-• Login without password 
-• View orders 
-• Find card used for $46.95 
-Example: 
-Order: $46.95 
-Card: 4111-1111-1111-1111 
- 
-      Demo 
-     Login field: 
-' OR '1'='1 
-     Access account 
-     Go to orders 
-�
-� What you say 
-“Here I am using SQL Injection to bypass login authentication. By entering ‘ OR ‘1’=’1, 
-the condition becomes always true, allowing access. After logging in as 
-joe@supplier.com, I checked order history and found the credit card number used for 
-the $46.95 transaction.” 
-4. Full Question 
-One of the BadStore pages has a hidden form field that establishes a new user’s 
-privilege level. What is the name of this field? 
-Important Terms 
-• Hidden Field → Invisible input in HTML form 
-• Privilege Level → User role (user/admin) 
-• Form → Data sent to server 
-Output 
-• Find hidden field 
-• Modify it → gain higher privileges 
-Example: 
-name="role" value="user" 
-Change to: 
-role=admin 
-Demo 
-Inspect page → View source 
-Find: 
-<input type="hidden" name="role" value="user"> 
-�
-� What you say 
-“This page contains a hidden form field that defines user privilege. Although it is hidden, 
-we can inspect and modify it. By changing the value from ‘user’ to ‘admin’, I can gain 
-administrative privileges. This shows improper validation on server side.” 
-5. Full Question 
-How many items for purchase are in BadStore’s database? Use SQL injection on the 
-quick search form field to find out. 
-Important Terms 
-• Database → Stores all product data 
-• SQL Injection → Query manipulation 
-• COUNT() → SQL function to count rows 
-Output 
-• Total number of items 
-Example: 
-Total items: 250 
-Demo 
-Search box input: 
-' UNION SELECT COUNT(*) FROM items-- 
-�
-� What you say 
-“I used SQL injection to extract information from the database. By using UNION SELECT 
-with COUNT(), I retrieved the total number of items stored in the database. This shows 
-that input fields are not properly sanitized.” 
- 
- 
-6. Full Question 
-What operations are suppliers permitted to do once they have logged into the 
-“suppliers only” area? 
- 
-    Important Terms 
-• Supplier Area → Restricted dashboard 
-• Operations → Actions allowed 
- 
-       Output 
-• List of actions: 
-o Add products 
-o Edit products 
-o View orders 
- 
-      Demo 
-     Login as supplier 
-     Open dashboard 
- 
-�
-� What you say 
-“After accessing the supplier area, I observed that suppliers can add new products, edit 
-existing ones, and view order details. These are the main operations permitted in this 
-section.” 
- 
- 
- 
- 
- 
-7. Full Question 
-Get administrator privileges and then use the admin action to look at the user 
-database. There are two users whose emails have the form XXX@whole.biz; what is 
-the XXX portion? 
- 
-    Important Terms 
-• Administrator Privileges → Full access 
-• User Database → Stores user info 
-• Email Pattern → Matching emails 
- 
-       Output 
-Example: 
-jackie@whole.biz 
-john@whole.biz 
-     Answer: 
-jackie, john 
- 
-      Demo 
-     Use SQL injection or privilege escalation 
-     Query: 
-' UNION SELECT email FROM users WHERE email LIKE '%@whole.biz'-- 
- 
-�
-� What you say 
-“After gaining admin access, I queried the user database to find emails ending with 
-@whole.biz. Using SQL injection, I retrieved matching records and identified the 
-usernames such as jackie and john.” 
- 
- 
  
 PART 2: SCAPY (PYTHON NETWORKING) 
 8. Full Question 
@@ -285,7 +101,6 @@ sniff(prn=callback)
 “This program acts as a network monitor. It uses a callback function that checks if a 
 packet contains ICMP. If yes, it prints the packet summary. This helps in monitoring 
 ping traffic in real time.” 
- 
  
 11. Full Question 
 Write a Python code using Scapy for creating a Network Scanner (Hint: Create an 
@@ -421,8 +236,7 @@ Output Example
 Connection to 127.0.0.1 22 port [tcp/ssh] succeeded! 
 nc: connect to 127.0.0.1 port 23 failed 
  
-�
-� What you say 
+ What you say 
 “Here I wrote a shell script using NetCat to scan ports from 20 to 25. The -z option 
 checks port status without sending data, and -v shows detailed output. It helps identify 
 which ports are open on a system.” 
@@ -450,8 +264,8 @@ nc 127.0.0.1 1234
      Output 
 Hello 
 Hi from other side 
-�
-� What you say 
+
+What you say 
 “In this experiment, one system acts as a server and listens on port 1234, while another 
 connects as a client. Any message typed on one side is received on the other. This 
 demonstrates basic client-server communication.” 
@@ -473,8 +287,8 @@ Output Example
 HTTP/1.1 200 OK 
 Content-Type: text/html 
  
-�
-� What you say 
+
+ What you say 
 “Here I used NetCat to manually send an HTTP GET request to a web server. The server 
 responds with headers and webpage content. This shows how HTTP communication 
 works internally.” 
@@ -504,8 +318,7 @@ Hello from NetCat server
      Browser shows: 
 Hello from NetCat server 
  
-�
-� What you say 
+What you say 
 “In this experiment, NetCat acts as a simple server. When the browser connects, 
 whatever text I type in the terminal is displayed in the browser. This shows how a server 
 sends data to a client.” 
@@ -530,8 +343,8 @@ http://localhost:8080
  
      Output 
 Image loads in browser 
-�
-� What you say 
+
+What you say 
 “Here I used NetCat to send an image file to the browser. The file is redirected to the 
 connection, and the browser displays it. This demonstrates how binary data can be 
 transmitted over a network.” 
@@ -564,11 +377,11 @@ Host is up
 PORT   STATE SERVICE 
 80/tcp open  http 
 22/tcp open  ssh 
-�
-� What you say 
+What you say 
 “Here I used Nmap ping scan to identify active hosts in the network. The -sn option 
 skips port scanning and only checks if hosts are up. Then I scanned a single IP to find its 
 open ports and running services.” 
+
 23. Full Question 
 Using Nmap, scan a range of IPs. Also scan an entire subnet. 
 Important Terms 
@@ -582,10 +395,10 @@ nmap 192.168.1.0/24
 Output 
 192.168.1.1 → open ports: 80, 22   
 192.168.1.5 → open ports: 443   
-�
-� What you say 
+What you say 
 “I scanned a range of IP addresses and an entire subnet using Nmap. This helps in 
 discovering all active systems and their open ports within a network.” 
+
 24. Full Question 
 Using Nmap, scan top 1000 ports (default). Also show how to detect service 
 version. 
@@ -599,11 +412,11 @@ nmap -sV 192.168.1.1
 Output Example 
 80/tcp open  http Apache 2.4.41 
 22/tcp open  ssh OpenSSH 7.9 
-�
-� What you say 
+What you say 
 “Here I scanned the target using Nmap’s default top 1000 ports. Using the -sV option, I 
 also detected the version of services running on those ports, which is useful for 
 vulnerability assessment.” 
+
 25. Full Question 
 Using Nmap show OS detection. Also demonstrate how to perform Aggressive 
 scan. 
@@ -619,11 +432,11 @@ Output Example
 OS: Linux 5.x 
 Service: Apache HTTP Server 
 Network Distance: 2 hops 
-�
-� What you say 
+What you say 
 “I used Nmap to detect the operating system of the target using the -O option. Then I 
 performed an aggressive scan using -A, which provides detailed information including 
 OS, services, versions, and traceroute.” 
+
 26. Full Question 
 Using Nmap, scan for vulnerabilities. Also demonstrate how to save results to a 
 text file. 
@@ -641,7 +454,6 @@ VULNERABLE:
 OpenSSL Heartbleed vulnerability 
 File created: 
 result.txt 
-�
-� What you say 
+What you say 
 “In this experiment, I used Nmap scripting engine to scan for vulnerabilities. The --script 
 vuln option checks for known security issues. The results are also saved into a file using -oN, which can be used for reporting.” 
