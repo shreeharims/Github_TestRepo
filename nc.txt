@@ -1,3 +1,8 @@
+NetCat (Networking Tool) 
+ A simple tool for sending and receiving data over network connections.  
+ Used for port scanning, chatting between systems, and debugging.  
+ Known as the “Swiss army knife of networking”.  
+
 1. Write a Shell script for port scan using NetCat.
 #!/bin/bash
 host="www.example.com"
