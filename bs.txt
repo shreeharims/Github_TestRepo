@@ -1,3 +1,8 @@
+BadStore (Web Security / SQL Injection / Cookies) 
+ A vulnerable web application used for learning security concepts.  
+ Helps practice SQL Injection, cookie manipulation, authentication bypass.  
+ Used to understand how attackers exploit web application weaknesses.  
+
 Q1.One of the BadStore pages has a hidden form field that establishes a new user’s privilege level. What is the name of this field?
 
 Procedure
