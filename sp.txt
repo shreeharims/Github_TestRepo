@@ -1,71 +1,122 @@
-1-b)
-from scapy.all import * 
-packet=IP()/TCP() 
-e_pack=Ether()/packet 
+1-b) Ethernet + IP Frame
+Using Scapy, create a frame that consists of an Ethernet layer, with an IP layer on top. With the show() method, capture all fields of the frame.
+ Code
+from scapy.all import *
+packet = IP(dst="1.1.1.1")/TCP()
+e_pack = Ether()/packet
 e_pack.show()
+ Wireshark Step
+sendp(e_pack)
+Open Wireshark → filter:
+tcp
 
-2-b)
-from scapy.all import * 
-packets=sniff(count=10) 
-packets.summary() 
-print(packets[0].show()) 
-print(packets[1].show())
+Creates a packet with Ethernet and IP layers. The show() function displays all fields like MAC and IP addresses. Using sendp(), we can capture this packet in Wireshark.
 
-3-a)
-from scapy.all import * 
+2-b) Sniff 10 Packets
+How to sniff with Scapy (capture 10 packets and show details of all packets)?
+Code
+from scapy.all import *
+packets = sniff(count=10)
+packets.summary()
+for pkt in packets:
+    pkt.show()
+ Wireshark Step
 
-result,unanswered=traceroute(["www.example.com","www.google.com"],maxttl=20) 
+ Open Wireshark → start capture → run code
+ Filter:ip
 
+Captures 10 packets from the network using sniff(). The summary shows brief info, while show() displays full packet details. Wireshark can also capture the same packets.
+
+3-a) Traceroute
+Demonstrate how to perform traceroute in Scapy.
+ Code
+from scapy.all import *
+result, unanswered = traceroute(["www.example.com", "www.google.com"], maxttl=20)
 result.show()
+ Wireshark Step
+Start Wireshark → filter:icmp
 
-4-a)
+Performs traceroute to find the path packets take to reach the destination. It shows intermediate routers (hops). Wireshark captures ICMP packets generated during traceroute.
+
+ 4-a) ARP Network Scanner
+Write a Python code using Scapy for creating a Network Scanner (Hint: Create an ARP packet using ARP() method).
+Code
 import scapy.all as scapy
-request = scapy.ARP()
-request.pdst = "192.168.1.1/28"
-broadcast = scapy.Ether()
-broadcast.dst = "ff:ff:ff:ff:ff:ff"
+request = scapy.ARP(pdst="192.168.1.1/28")
+broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
 request_broadcast = broadcast / request
 clients = scapy.srp(request_broadcast, timeout=2)[0]
 for element in clients:
     print(element[1].psrc + " - " + element[1].hwsrc)
+Wireshark Step
+ Filter:arp
 
-7-  a)
-from scapy.all import * 
-packet=IP(dst="8.8.8.8")/ICMP() 
+Sends ARP requests to all devices in the network. Active devices reply with IP and MAC addresses. This helps identify connected systems.
+
+ 7-a) Send ICMP Packet
+Demonstrate how to send ICMP packets in Scapy and show the packet captured using Wireshark to destination 8.8.8.8.
+Code
+from scapy.all import *
+packet = IP(dst="8.8.8.8")/ICMP()
 send(packet)
+Wireshark Step
+ Filter:icmp
 
-8- a) 
+Creates and sends an ICMP (ping) packet to 8.8.8.8. Wireshark captures the echo request and reply, confirming communication.
+
+ 8-a) Port Scan using Scapy
+Demonstrate how to perform a Port Scan using Scapy tool on target www.example.com
+ Code
 from scapy.all import *
 target = "www.example.com"
 for port in range(20, 25):
-    packet = IP(dst=target) / TCP(dport=port, flags="S")
+    packet = IP(dst=target)/TCP(dport=port, flags="S")
     response = sr1(packet, timeout=1, verbose=0)
     if response:
-        print("Port", port, "is open")
+        if response.haslayer(TCP) and response.getlayer(TCP).flags == 18:
+            print("Port", port, "is open")
+Wireshark Step
+Filter:tcp
 
+Sends TCP SYN packets to check if ports are open. If the response is SYN-ACK, the port is open. This method is used for basic port scanning.
 
-10- a)
+10-a) ICMP Monitor (Callback)
+Create a simple network monitor that watches for ICMP packets using Python function callback in Scapy.
+Code
 from scapy.all import *
 def callback(packet):
     if packet.haslayer(ICMP):
         print("ICMP Packet Detected")
         packet.show()
-
 sniff(filter="icmp", prn=callback, count=10)
+Wireshark Step
+ Filter:icmp
 
-11- a)
+Monitors network traffic and prints only ICMP packets. The callback function processes each captured packet. Useful for detecting ping activity.
+
+11-a) Identify Active Hosts
+Identify hosts that are up in a local network using Scapy (hint: ARP).
+Code
 import scapy.all as scapy
-request = scapy.ARP()
-request.pdst = "192.168.5.0/24"
-broadcast = scapy.Ether()
-broadcast.dst = "ff:ff:ff:ff:ff:ff"
+request = scapy.ARP(pdst="192.168.5.0/24")
+broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
 request_broadcast = broadcast / request
 clients = scapy.srp(request_broadcast, timeout=1)[0]
 for element in clients:
     print(element[1].psrc + " - " + element[1].hwsrc)
+Wireshark Step
+Filter:arp
 
-12- a)
-from scapy.all import * result,unanswered=traceroute(["www.example.com","www.google.com"],maxttl=20) 
+Uses ARP requests to detect active devices in the network. Devices that respond are considered “up”. Displays IP and MAC addresses.
+
+12-a) Route + Delay
+Display the route and measure transit delays of packets across an IP network with Scapy (on www.example.com
+, www.google.com).
+ Code
+from scapy.all import *
+result, unanswered = traceroute(["www.example.com", "www.google.com"], maxttl=20)
 result.show()
+Wireshark Step
+Filter:icmp
 
-
+Shows the path taken by packets and delay between hops. Each hop represents a router. Helps analyze network performance.
