@@ -1,0 +1,244 @@
+exp1a:
+create 2 text files on desktop,put some content into it
+merge those 2 files into zip
+download a .png file in the same directory
+go to cmd via desktop: copy /B image.png + file.zip newfile.png
+a new file will be created open it with WinRAR u can see those 2 hidden files there
+PARTB:
+corrupted image file will be given 
+open the hexedit:
+for PNG:
+98 50 E4 47 D0
+89 50 4E 47 0D
+for jpg:
+FF 8D FF 0E 
+FF D8 FF E0 
+for bmp:
+24 D4 
+42 4D
+for gif:
+74 94 46 83
+47 49 46 38
+for tif:
+94 94 A2
+49 49 2A
+for webp:
+25 49 64 64
+52 49 46 46
+
+1b.tcpdump -D
+
+sudo tcpdump -i any
+Ctrl + C
+
+sudo tcpdump -i any -w capture.pcap
+Ctrl + C
+
+# open new terminal
+ping google.com
+Ctrl + C
+
+# back to first terminal
+sudo tcpdump -i any tcp
+Ctrl + C
+
+sudo tcpdump -i any icmp
+Ctrl + C
+
+sudo tcpdump -i any port 80
+Ctrl + C
+
+sudo tcpdump -n -i any 'tcp[tcpflags] & tcp-syn != 0'
+Ctrl + C
+
+sudo tcpdump -n -i any 'tcp[tcpflags] & tcp-syn != 0' -w tcpsyn.pcap
+Ctrl + C
+
+sudo tcpdump -n -i any 'tcp[tcpflags] & tcp-ack != 0'
+Ctrl + C
+
+sudo tcpdump -n -i any 'tcp[tcpflags] & (tcp-syn|tcp-ack) != 0'
+Ctrl + C
+
+sudo tcpdump -n -i any 'tcp[tcpflags] & tcp-fin != 0' -w tcpfin.pcap
+Ctrl + C
+
+sudo tcpdump -r capture.pcap
+
+sudo tcpdump -A -r capture.pcap
+
+sudo tcpdump -xx -r capture.pcap
+
+sudo tcpdump -xx -r tcpsyn.pcap
+
+sudo tcpdump -xx -r tcpfin.pcap
+ 
+
+1c.HTTP:
+open web browser->clear history
+start wireshark->any
+web browser->http://example.com
+wireshark->filter http
+HTTPS:
+open web browser->clear history
+start wireshark->any
+web browser->https://example.com
+wireshark->filter ssl
+=====
+2a.open paint black background->write a text in white clr->save image as .bmp
+open coagula light(in c/d drive)->open file->in sound menu select render without blue->save .wav file
+open sonic visualizer->open .wav file->navigate to layers->add spectogram->select all channels mixed
+
+2b.import numpy as np
+from PIL import Image
+
+# ENCODE
+def encode(src, message, dest):
+    img = Image.open(src)
+    data = np.array(img)
+
+    message += "stego"   # end marker
+    binary = ''.join(format(ord(i), '08b') for i in message)
+
+    index = 0
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            for k in range(3):   # RGB
+                if index < len(binary):
+                    data[i][j][k] = int(bin(data[i][j][k])[2:9] + binary[index], 2)
+                    index += 1
+
+    Image.fromarray(data).save(dest)
+    print("Image Encoded Successfully!")
+
+# DECODE 
+def decode(src):
+    img = Image.open(src)
+    data = np.array(img)
+
+    bits = ""
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            for k in range(3):
+                bits += bin(data[i][j][k])[-1]
+
+    chars = [bits[i:i+8] for i in range(0,len(bits),8)]
+
+    message = ""
+    for c in chars:
+        message += chr(int(c,2))
+        if message.endswith("stego"):
+            print("Hidden message:", message[:-5])
+            return
+
+    print("No hidden message found")
+
+
+#  MENU 
+print("1. Encode")
+print("2. Decode")
+choice = input()
+
+if choice == '1':
+    encode(input("Source image: "), input("Message: "), "output.png")
+elif choice == '2':
+    decode(input("Encoded image: "))
+else:
+    print("Invalid option")
+2c.RSA Key Generation:
+openssl genrsa -out key.pri 2048 //Generate RSA Private Key (2048 bits)
+openssl rsa -in key.pri -noout -text //Examine the RSA Private Key
+openssl rsa -in key.pri -out key.pub -pubout //generate rsa public key
+echo "Hello RSA Encryption" > Earth.txt // creating a text file
+Encrypt the file using the public key:
+openssl rsautl -encrypt -inkey key.pub -pubin -in Earth.txt -out Earth.enc
+RSA Decryption Using Private Key:
+openssl rsautl -decrypt -inkey key.pri -in Earth.enc -out Earth.dec
+Encryption of a Secret Key Using RSA:
+openssl rand -hex -out encryption.key 32//Generate a Symmetric Secret Key (32 bytes)
+Encrypt the Secret Key Using RSA Public Key:
+openssl rsautl -encrypt -inkey key.pub -pubin -in encryption.key -out encryption.key.enc
+Decrypt the Secret Key Using RSA Private Key:
+openssl rsautl -decrypt -inkey key.pri -in encryption.key.enc -out encryption.key.dec
+=========
+3a.
+touch plain.txt
+gedit plain.txt
+cat plain.txt
+
+openssl enc -aes-128-cbc -e -in plain.txt -out cipher1.bin -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in cipher1.bin -out output1.txt -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+xxd cipher1.bin
+cat output1.txt
+
+openssl enc -aes-128-ecb -e -in plain.txt -out cipher2.bin -K 0123456789abcdeffedcba9876543210
+openssl enc -aes-128-ecb -d -in cipher2.bin -out output2.txt -K 0123456789abcdeffedcba9876543210
+xxd cipher2.bin
+cat output2.txt
+
+3b.
+echo -n 12345 > f1.txt
+echo -n 1234567890 > f2.txt
+echo -n 1234567890abcdef > f3.txt
+
+ls -l f*.txt
+
+openssl enc -aes-128-cbc -e -in f1.txt -out f1.bin -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f1.bin -out f1_dec.txt -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f1.bin -out f1_nopad.txt -nopad -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+xxd f1_dec.txt
+xxd f1_nopad.txt
+
+openssl enc -aes-128-cbc -e -in f2.txt -out f2.bin -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f2.bin -out f2_dec.txt -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f2.bin -out f2_nopad.txt -nopad -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+xxd f2_dec.txt
+xxd f2_nopad.txt
+
+openssl enc -aes-128-cbc -e -in f3.txt -out f3.bin -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f3.bin -out f3_dec.txt -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f3.bin -out f3_nopad.txt -nopad -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+xxd f3_dec.txt
+xxd f3_nopad.txt
+3c.Same as 1b
+=======
+4a.part a:error propagation
+  touch plain.txt
+gedit plain.txt
+openssl enc -aes-128-ecb -e -in plain.txt -out cipher_ecb.bin -K 0123456789abcdeffedcba9876543210
+ghex cipher_ecb.bin
+
+openssl enc -aes-128-ecb -d -in cipher_ecb.bin -out op_ecb.txt -K 0123456789abcdeffedcba9876543210
+openssl enc -aes-128-cbc -e -in plain.txt -out cipher_cbc.bin -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+ghex cipher_cbc.bin
+openssl enc -aes-128-cbc -d -in cipher_cbc.bin -out op_cbc.txt -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+cat op_ecb.txt
+cat op_cbc.txt
+
+part b : initialisation vector 
+echo "THIS IS SAMPLE DATA FOR AES IV TEST" > abc.txt
+openssl enc -aes-128-cbc -e -in abc.txt -out cipher_iv1.bin -K 00112233445566778899AABBCCDDEEFF -iv 0102030405060708090A0B0C0D0E0F10
+xxd cipher_iv1.bin
+openssl enc -aes-128-cbc -e -in abc.txt -out cipher_iv2.bin -K 00112233445566778899AABBCCDDEEFF -iv 1112131415161718191A1B1C1D1E1F20
+xxd cipher_iv2.bin
+openssl enc -aes-128-cbc -e -in abc.txt -out cipher_same1.bin -K 00112233445566778899AABBCCDDEEFF -iv 0102030405060708090A0B0C0D0E0F10
+xxd cipher_same1.bin
+openssl enc -aes-128-cbc -e -in abc.txt -out cipher_same2.bin -K 00112233445566778899AABBCCDDEEFF -iv 0102030405060708090A0B0C0D0E0F10
+xxd cipher_same2.bin
+openssl enc -aes-128-cbc -d -in cipher_iv1.bin -out dec_iv1.txt -K 00112233445566778899AABBCCDDEEFF -iv 0102030405060708090A0B0C0D0E0F10
+cat dec_iv1.txt
+openssl enc -aes-128-cbc -d -in cipher_iv2.bin -out dec_iv2.txt -K 00112233445566778899AABBCCDDEEFF -iv 1112131415161718191A1B1C1D1E1F20
+cat dec_iv2.txt
+
+
+4b.go for seed labs->secret key enc->image.bmp
+openssl enc -aes-128-ecb -e -in pic_original.bmp -out pic_ecb.bmp -K 0123456789abcdeffedcba9876543210
+openssl enc -aes-128-cbc -e -in pic_original.bmp -out pic_cbc.bmp -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+head -c 54 pic_original.bmp > header
+tail -c +55 pic_ecb.bmp > body_ecb
+cat header body_ecb > new_ecb.bmp
+tail -c +55 pic_cbc.bmp > body_cbc
+cat header body_cbc > new_cbc.bmp
+eog new_ecb.bmp
+eog new_cbc.bmp
+4c.Same as 2c
